@@ -23,6 +23,7 @@ import DraggableFlatList, {
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import { MoveRight } from "lucide-react-native";
+import { SCREENS } from "../../constants/staticConstants";
 
 interface MatchPair {
   id: string;
@@ -165,13 +166,7 @@ interface DestinationCardProps {
 
 // Static (non-draggable) version used in the fixed left column.
 const DestinationCard: React.FC<DestinationCardProps> = ({ pair, status }) => (
-  <View
-    style={[
-      styles.destCard,
-      status === "correct" && styles.destCardCorrect,
-      status === "wrong" && styles.destCardWrong,
-    ]}
-  >
+  <View style={[styles.destCard]}>
     <Text style={styles.destPin}>📍</Text>
     <Text style={styles.destText} numberOfLines={2} adjustsFontSizeToFit>
       {pair.destination}
@@ -374,7 +369,7 @@ const PhotoMatchScreen = ({ navigation }: any) => {
                   styles.primaryButton,
                   pressed && styles.pressed,
                 ]}
-                onPress={() => navigation.navigate("BirthdayScreen")}
+                onPress={() => navigation.navigate(SCREENS.birthdayScreen)}
               >
                 <Text style={styles.primaryButtonText}>Continue ➡️</Text>
               </Pressable>
@@ -626,14 +621,6 @@ const styles = StyleSheet.create({
     padding: 8,
     ...CARD_SHADOW,
   },
-  destCardCorrect: {
-    borderColor: "#8ce8a8",
-    backgroundColor: "rgba(140,232,168,0.18)",
-  },
-  destCardWrong: {
-    borderColor: "#ff9a9a",
-    backgroundColor: "rgba(255,154,154,0.18)",
-  },
   destPin: {
     fontSize: 20,
     marginBottom: 4,
@@ -645,6 +632,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   footer: {
+    marginBottom: 20,
     width: "100%",
     paddingHorizontal: 20,
     paddingTop: 10,
@@ -678,7 +666,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: "center",
     marginTop: 10,
-    marginBottom: 20,
   },
   pressed: {
     opacity: 0.8,
