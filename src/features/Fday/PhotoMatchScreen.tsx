@@ -22,6 +22,7 @@ import DraggableFlatList, {
   RenderItemParams,
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
+import { MoveRight } from "lucide-react-native";
 
 interface MatchPair {
   id: string;
@@ -85,11 +86,12 @@ const CARD_RADIUS = 18;
 const ROW_GAP = 18;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const SCREEN_HORIZONTAL_PADDING = 20;
-const COLUMN_GAP = 28;
-const AVAILABLE_WIDTH = SCREEN_WIDTH - SCREEN_HORIZONTAL_PADDING * 2;
-const COLUMN_WIDTH = (AVAILABLE_WIDTH - COLUMN_GAP) / 2;
-const CARD_SIZE = Math.round(COLUMN_WIDTH * 0.7);
+const COLUMN_GAP = 16;
+const ARROW_COL_WIDTH = 90;
+const AVAILABLE_WIDTH = SCREEN_WIDTH;
+const COLUMN_WIDTH = (AVAILABLE_WIDTH - COLUMN_GAP * 2 - ARROW_COL_WIDTH) / 2;
+const CARD_SIZE = Math.round(COLUMN_WIDTH * 0.83);
+const ROW_HEIGHT = CARD_SIZE + ROW_GAP;
 
 const CARD_SHADOW = Platform.select<ViewStyle>({
   ios: {
@@ -158,19 +160,14 @@ const PhotoCard: React.FC<PhotoCardProps> = ({ pair, isActive, onPreview }) => (
 
 interface DestinationCardProps {
   pair: MatchPair;
-  isActive: boolean;
   status: RowStatus;
 }
 
-const DestinationCard: React.FC<DestinationCardProps> = ({
-  pair,
-  isActive,
-  status,
-}) => (
+// Static (non-draggable) version used in the fixed left column.
+const DestinationCard: React.FC<DestinationCardProps> = ({ pair, status }) => (
   <View
     style={[
       styles.destCard,
-      isActive && styles.destCardActive,
       status === "correct" && styles.destCardCorrect,
       status === "wrong" && styles.destCardWrong,
     ]}
@@ -179,10 +176,6 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
     <Text style={styles.destText} numberOfLines={2} adjustsFontSizeToFit>
       {pair.destination}
     </Text>
-
-    <View style={styles.dragHandle} pointerEvents="none">
-      <Text style={styles.dragHandleIcon}>⠿</Text>
-    </View>
   </View>
 );
 
@@ -212,10 +205,10 @@ const GlassModal: React.FC<GlassModalProps> = ({ visible, children }) => (
 );
 
 const PhotoMatchScreen = ({ navigation }: any) => {
-  // Both columns are independently draggable. A "match" is just: does the
-  // item at row i on the left have the same id as the item at row i on the
-  // right? No connections map, no line geometry to keep in sync.
-  const [leftOrder, setLeftOrder] = useState<MatchPair[]>(() => shuffle(PAIRS));
+  // Left column is now fixed/static and always shows PAIRS in order
+  // (Frip 1 -> Frip 8). Only the right (photo) column is draggable.
+  // A "match" is: does the photo at row i on the right have the same id
+  // as the destination at row i (which is just PAIRS[i]) on the left.
   const [rightOrder, setRightOrder] = useState<MatchPair[]>(() =>
     shuffle(PAIRS),
   );
@@ -239,7 +232,6 @@ const PhotoMatchScreen = ({ navigation }: any) => {
   }));
 
   const resetBoard = () => {
-    setLeftOrder(shuffle(PAIRS));
     setRightOrder(shuffle(PAIRS));
     setRowStatuses(PAIRS.map(() => null));
   };
@@ -251,7 +243,7 @@ const PhotoMatchScreen = ({ navigation }: any) => {
   };
 
   const handleConfirm = () => {
-    const statuses: RowStatus[] = leftOrder.map((pair, index) =>
+    const statuses: RowStatus[] = PAIRS.map((pair, index) =>
       rightOrder[index]?.id === pair.id ? "correct" : "wrong",
     );
     const correctCount = statuses.filter(
@@ -290,45 +282,25 @@ const PhotoMatchScreen = ({ navigation }: any) => {
     isActive,
   }: RenderItemParams<MatchPair>) => (
     <ScaleDecorator>
-      <Pressable
-        onLongPress={drag}
-        disabled={isSuccess}
-        delayLongPress={150}
-        style={styles.cardSlot}
-      >
-        <PhotoCard
-          pair={item}
-          isActive={isActive}
-          onPreview={() => openPreview(item.id)}
-        />
-      </Pressable>
-    </ScaleDecorator>
-  );
-
-  const renderDestinationItem = ({
-    item,
-    drag,
-    isActive,
-    getIndex,
-  }: RenderItemParams<MatchPair>) => {
-    const index = getIndex() ?? -1;
-    return (
-      <ScaleDecorator>
+      <View style={styles.cardSlot}>
+        {/* Only the card itself is the drag/long-press target — not the
+            full row width — so the outer ScrollView keeps its own gesture
+            area free and there's no more fighting between the two. */}
         <Pressable
           onLongPress={drag}
           disabled={isSuccess}
           delayLongPress={150}
-          style={styles.cardSlot}
+          style={styles.dragTarget}
         >
-          <DestinationCard
+          <PhotoCard
             pair={item}
             isActive={isActive}
-            status={index === -1 ? null : rowStatuses[index]}
+            onPreview={() => openPreview(item.id)}
           />
         </Pressable>
-      </ScaleDecorator>
-    );
-  };
+      </View>
+    </ScaleDecorator>
+  );
 
   return (
     <GestureHandlerRootView style={styles.flex}>
@@ -348,22 +320,30 @@ const PhotoMatchScreen = ({ navigation }: any) => {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.columns}>
-            <DraggableFlatList
-              data={leftOrder}
-              onDragEnd={({ data }) => setLeftOrder(data)}
-              keyExtractor={(item) => item.id}
-              renderItem={renderPhotoItem}
-              scrollEnabled={false}
-              style={styles.leftColumn}
-              contentContainerStyle={styles.columnContent}
-              activationDistance={0}
-            />
+            {/* Left column: static, always in order, not draggable */}
+            <View style={styles.leftColumn}>
+              {PAIRS.map((pair, index) => (
+                <View key={pair.id} style={styles.cardSlot}>
+                  <DestinationCard pair={pair} status={rowStatuses[index]} />
+                </View>
+              ))}
+            </View>
 
+            {/* Middle column: decorative direction arrows, one per row */}
+            <View style={styles.arrowColumn} pointerEvents="none">
+              {PAIRS.map((pair) => (
+                <View key={pair.id} style={styles.arrowSlot}>
+                  <MoveRight size={80} color="#bcbbbb" />
+                </View>
+              ))}
+            </View>
+
+            {/* Right column: draggable photos */}
             <DraggableFlatList
               data={rightOrder}
               onDragEnd={({ data }) => setRightOrder(data)}
               keyExtractor={(item) => item.id}
-              renderItem={renderDestinationItem}
+              renderItem={renderPhotoItem}
               scrollEnabled={false}
               style={styles.rightColumn}
               contentContainerStyle={styles.columnContent}
@@ -413,7 +393,7 @@ const PhotoMatchScreen = ({ navigation }: any) => {
 
           {!isSuccess && (
             <Text style={styles.footerHint}>
-              Hold and drag a card to reorder a column
+              Hold and drag a photo to reorder it
             </Text>
           )}
         </View>
@@ -526,11 +506,10 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     width: "100%",
-    marginTop: 40,
-    marginBottom: 20,
+    marginVertical: 20,
   },
   scrollContent: {
-    paddingHorizontal: SCREEN_HORIZONTAL_PADDING,
+    paddingHorizontal: 20,
     paddingTop: 8,
     paddingBottom: 16,
     flexGrow: 1,
@@ -538,10 +517,22 @@ const styles = StyleSheet.create({
   columns: {
     flexDirection: "row",
     width: "100%",
-    justifyContent: "space-between",
+    alignItems: "flex-start",
+    justifyContent: "center",
   },
   leftColumn: {
     width: COLUMN_WIDTH,
+    alignItems: "center",
+  },
+  arrowColumn: {
+    width: ARROW_COL_WIDTH,
+    alignItems: "center",
+  },
+  arrowSlot: {
+    height: ROW_HEIGHT,
+    width: ARROW_COL_WIDTH,
+    alignItems: "center",
+    justifyContent: "center",
   },
   rightColumn: {
     width: COLUMN_WIDTH,
@@ -549,10 +540,20 @@ const styles = StyleSheet.create({
   columnContent: {
     alignItems: "center",
   },
+  // Slot reserves the full row height/width for spacing/alignment, but the
+  // touchable/draggable surface inside it (dragTarget) is only CARD_SIZE —
+  // this is what keeps the outer ScrollView's gesture area separate from
+  // the drag gesture and stops the scroll from feeling glitchy.
   cardSlot: {
     marginBottom: ROW_GAP,
     alignItems: "center",
-    width: "100%",
+    justifyContent: "center",
+    width: COLUMN_WIDTH,
+    height: CARD_SIZE,
+  },
+  dragTarget: {
+    width: CARD_SIZE,
+    height: CARD_SIZE,
   },
   cardWrapper: {
     width: CARD_SIZE,
@@ -625,10 +626,6 @@ const styles = StyleSheet.create({
     padding: 8,
     ...CARD_SHADOW,
   },
-  destCardActive: {
-    transform: [{ scale: 1.05 }],
-    backgroundColor: "rgba(255,255,255,0.16)",
-  },
   destCardCorrect: {
     borderColor: "#8ce8a8",
     backgroundColor: "rgba(140,232,168,0.18)",
@@ -681,6 +678,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: "center",
     marginTop: 10,
+    marginBottom: 20,
   },
   pressed: {
     opacity: 0.8,

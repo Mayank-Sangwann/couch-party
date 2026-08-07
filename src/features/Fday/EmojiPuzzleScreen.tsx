@@ -2,7 +2,6 @@ import React, { useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -104,7 +103,7 @@ const EmojiPuzzleScreen = ({ navigation }: any) => {
       colors={["#1f0036", "#4a0068", "#ff6f91"]}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.scrollContent}>
         <Text style={styles.title}>Level 1 💫</Text>
         <Text style={styles.subtitle}>
           Decode the clues, then enter the passcode above
@@ -173,7 +172,7 @@ const EmojiPuzzleScreen = ({ navigation }: any) => {
             </Pressable>
           </>
         )}
-      </ScrollView>
+      </View>
     </LinearGradient>
   );
 };
@@ -204,7 +203,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 20,
-    padding: 20,
+    padding: 16,
     marginBottom: 16,
     alignItems: "center",
   },
@@ -242,7 +241,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "#ff9a9a",
-    marginTop: 14,
     marginBottom: 28,
     fontSize: 13,
   },
@@ -255,9 +253,11 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   solvedText: {
-    fontSize: 18,
+    fontSize: 22,
     color: "#4caf6d",
     fontWeight: "700",
+    marginTop: 20,
+    marginBottom: 24,
   },
   continueButton: {
     marginTop: 20,
