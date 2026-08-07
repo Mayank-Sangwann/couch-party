@@ -37,8 +37,6 @@ interface AttemptResult {
   wrong: number;
 }
 
-// EDIT ME: swap these 5 photos (zoomed-in crops work best — it's more fun to
-// guess) and destination names for your own trips together.
 const PAIRS: MatchPair[] = [
   {
     id: "1",
@@ -263,8 +261,7 @@ const PhotoMatchScreen = ({ navigation }: any) => {
 
     setRowStatuses(statuses);
 
-    //todo: remove || true, used for tesing only
-    if (correctCount === PAIRS.length || true) {
+    if (correctCount === PAIRS.length) {
       setIsSuccess(true);
       return;
     }
