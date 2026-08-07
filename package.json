@@ -4,9 +4,10 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -15,18 +16,46 @@
     "@react-navigation/native": "^7.1.27",
     "@react-navigation/stack": "^7.6.14",
     "@reduxjs/toolkit": "^2.11.2",
+    "@shopify/react-native-skia": "2.2.12",
     "expo": "~54.0.31",
+    "expo-image-picker": "~17.0.11",
     "expo-status-bar": "~3.0.9",
+    "lottie-react-native": "~7.3.1",
+    "lucide-react-native": "^1.30.0",
+    "moti": "^0.30.0",
     "react": "19.1.0",
     "react-native": "0.81.5",
+    "react-native-confetti-cannon": "^1.5.2",
+    "react-native-draggable-flatlist": "^4.0.3",
     "react-native-dropdown-picker": "^5.4.6",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-image-viewing": "^0.2.2",
+    "react-native-linear-gradient": "^2.8.3",
+    "react-native-mmkv": "^4.3.2",
+    "react-native-orientation-locker": "^1.7.0",
+    "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
-    "react-redux": "^9.2.0"
+    "react-native-sensors": "^7.3.6",
+    "react-native-svg": "^15.15.5",
+    "react-native-video": "^6.19.2",
+    "react-redux": "^9.2.0",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-class-properties": "^7.29.7",
+    "@babel/plugin-transform-private-methods": "^7.29.7",
+    "@babel/plugin-transform-private-property-in-object": "^7.29.7",
     "@types/react": "~19.1.0",
+    "babel-preset-expo": "~54.0.10",
+    "patch-package": "^8.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "typescript": "~5.9.2"
+  },
+  "overrides": {
+    "moti": {
+      "framer-motion": "^12.0.0"
+    }
   },
   "private": true
 }

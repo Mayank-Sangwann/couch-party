@@ -16,9 +16,6 @@ export default function HeadsUpIntroScreen({ navigation, route }: any) {
     );
   };
 
-  const onPress = () => {
-    navigation.navigate(SCREENS.headsUpScreen, { players });
-  };
   return (
     <View style={styles.container}>
       <FlatList
@@ -28,9 +25,8 @@ export default function HeadsUpIntroScreen({ navigation, route }: any) {
       />
 
       <PrimaryButton
-        label="start game"
-        onPress={onPress}
-        style={styles.button}
+        label="Start Game"
+        onPress={() => navigation.navigate(SCREENS.headsUpScreen)}
       />
     </View>
   );

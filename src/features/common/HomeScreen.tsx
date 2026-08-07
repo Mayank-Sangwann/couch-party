@@ -4,7 +4,7 @@ import { SCREENS } from "../../constants/staticConstants";
 
 export default function HomeScreen({ navigation }: any) {
   const onStart = () => {
-    navigation.navigate(SCREENS.playerSelectorScreen);
+    navigation.navigate(SCREENS.gameListScreen);
   };
 
   return (

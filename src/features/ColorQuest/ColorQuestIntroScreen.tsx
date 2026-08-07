@@ -3,8 +3,10 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import commonStyles from "../../constants/commonStyles";
 import PrimaryButton from "../../components/PrimaryButton";
 import { SCREENS } from "../../constants/staticConstants";
+import { useAppDispatch } from "../../store/hooks";
+import { startGame } from "./colorQuestSlice";
 
-const COLORS = [
+const COLOR_MAP = [
   { id: "red", name: "Red", hex: "#FF3B30" },
   { id: "orange", name: "Orange", hex: "#FF9500" },
   { id: "yellow", name: "Yellow", hex: "#FFCC00" },
@@ -16,13 +18,18 @@ const COLORS = [
 ];
 
 export default function ColorQuestIntroScreen({ navigation }: any) {
+  const dispatch = useAppDispatch();
   const [selectedColor, setSelectedColor] = useState<
-    (typeof COLORS)[number] | null
+    (typeof COLOR_MAP)[number] | null
   >(null);
 
-  const startGame = () => {
+  const handleStartGame = () => {
     if (!selectedColor) return;
-
+    dispatch(
+      startGame({
+        selectedColor: selectedColor,
+      }),
+    );
     navigation.replace(SCREENS.colorQuestScreen, {
       selectedColor,
     });
@@ -37,7 +44,7 @@ export default function ColorQuestIntroScreen({ navigation }: any) {
       </Text>
 
       <View style={styles.colorsContainer}>
-        {COLORS.map((color) => (
+        {COLOR_MAP.map((color) => (
           <Pressable
             key={color.id}
             onPress={() => setSelectedColor(color)}
@@ -56,7 +63,7 @@ export default function ColorQuestIntroScreen({ navigation }: any) {
 
       <PrimaryButton
         label="Start Quest"
-        onPress={startGame}
+        onPress={handleStartGame}
         disabled={!selectedColor}
         style={styles.button}
       />

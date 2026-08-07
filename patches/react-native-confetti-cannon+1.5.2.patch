@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-confetti-cannon/src/index.js b/node_modules/react-native-confetti-cannon/src/index.js
+index 7092e70..04bd62f 100644
+--- a/node_modules/react-native-confetti-cannon/src/index.js
++++ b/node_modules/react-native-confetti-cannon/src/index.js
+@@ -61,7 +61,6 @@ export const DEFAULT_EXPLOSION_SPEED = 350;
+ export const DEFAULT_FALL_SPEED = 3000;
+ 
+ class Explosion extends React.PureComponent<Props, State> {
+-  props: Props;
+   state: State = {
+     items: []
+   };

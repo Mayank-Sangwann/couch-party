@@ -13,7 +13,13 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.couch-party",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Color Quest uses the camera so you can capture photos for your game.",
+        "NSPhotoLibraryUsageDescription": "Color Quest lets you choose photos from your library.",
+        "NSPhotoLibraryAddUsageDescription": "Color Quest can save generated images to your photo library."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +31,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "react-native-video"
+    ]
   }
 }
