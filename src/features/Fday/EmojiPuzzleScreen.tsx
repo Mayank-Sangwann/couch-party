@@ -1,10 +1,12 @@
 import React, { useMemo, useRef, useState } from "react";
 import {
   Dimensions,
+  Keyboard,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -99,81 +101,83 @@ const EmojiPuzzleScreen = ({ navigation }: any) => {
   };
 
   return (
-    <LinearGradient
-      colors={["#1f0036", "#4a0068", "#ff6f91"]}
-      style={styles.container}
-    >
-      <View style={styles.scrollContent}>
-        <Text style={styles.title}>Level 1 💫</Text>
-        <Text style={styles.subtitle}>
-          Decode the clues, then enter the passcode above
-        </Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <LinearGradient
+        colors={["#1f0036", "#4a0068", "#ff6f91"]}
+        style={styles.container}
+      >
+        <View style={styles.scrollContent}>
+          <Text style={styles.title}>Level 1 💫</Text>
+          <Text style={styles.subtitle}>
+            Decode the clues, then enter the passcode above
+          </Text>
 
-        {isSolved ? (
-          <View style={styles.solvedBanner}>
-            <Text style={styles.solvedText}>✅ Passcode correct!</Text>
-          </View>
-        ) : (
-          <>
-            <Text style={styles.passcodeLabel}>Enter passcode</Text>
-            <Animated.View style={[styles.passcodeRow, shakeStyle]}>
-              {digits.map((digit, index) => (
-                <TextInput
-                  key={index}
-                  ref={(ref) => {
-                    inputRefs.current[index] = ref;
-                  }}
-                  style={[
-                    styles.passcodeBox,
-                    hasError && styles.passcodeBoxError,
-                  ]}
-                  value={digit}
-                  onChangeText={(value) => handleDigitChange(index, value)}
-                  onKeyPress={({ nativeEvent }) =>
-                    handleKeyPress(index, nativeEvent.key)
-                  }
-                  keyboardType="number-pad"
-                  maxLength={1}
-                  textAlign="center"
-                  selectTextOnFocus
-                />
-              ))}
-            </Animated.View>
-            {hasError && (
-              <Text style={styles.errorText}>Not quite, try again 💭</Text>
-            )}
-          </>
-        )}
+          {isSolved ? (
+            <View style={styles.solvedBanner}>
+              <Text style={styles.solvedText}>✅ Passcode correct!</Text>
+            </View>
+          ) : (
+            <>
+              <Text style={styles.passcodeLabel}>Enter passcode</Text>
+              <Animated.View style={[styles.passcodeRow, shakeStyle]}>
+                {digits.map((digit, index) => (
+                  <TextInput
+                    key={index}
+                    ref={(ref) => {
+                      inputRefs.current[index] = ref;
+                    }}
+                    style={[
+                      styles.passcodeBox,
+                      hasError && styles.passcodeBoxError,
+                    ]}
+                    value={digit}
+                    onChangeText={(value) => handleDigitChange(index, value)}
+                    onKeyPress={({ nativeEvent }) =>
+                      handleKeyPress(index, nativeEvent.key)
+                    }
+                    keyboardType="number-pad"
+                    maxLength={1}
+                    textAlign="center"
+                    selectTextOnFocus
+                  />
+                ))}
+              </Animated.View>
+              {hasError && (
+                <Text style={styles.errorText}>Not quite, try again 💭</Text>
+              )}
+            </>
+          )}
 
-        {CLUES.map((clue, index) => (
-          <View key={index} style={styles.card}>
-            <Text style={styles.level}>{clue.level}</Text>
-            <Text style={styles.emojis}>{clue.emojis}</Text>
-          </View>
-        ))}
+          {CLUES.map((clue, index) => (
+            <View key={index} style={styles.card}>
+              <Text style={styles.level}>{clue.level}</Text>
+              <Text style={styles.emojis}>{clue.emojis}</Text>
+            </View>
+          ))}
 
-        {isSolved && (
-          <>
-            <ConfettiCannon
-              count={120}
-              origin={{ x: width / 2, y: -20 }}
-              fadeOut
-              autoStart
-              explosionSpeed={350}
-            />
-            <Pressable
-              style={({ pressed }) => [
-                styles.continueButton,
-                pressed && styles.pressed,
-              ]}
-              onPress={() => navigation.navigate("WordGuessScreen")}
-            >
-              <Text style={styles.continueButtonText}>Continue ➡️</Text>
-            </Pressable>
-          </>
-        )}
-      </View>
-    </LinearGradient>
+          {isSolved && (
+            <>
+              <ConfettiCannon
+                count={120}
+                origin={{ x: width / 2, y: -20 }}
+                fadeOut
+                autoStart
+                explosionSpeed={350}
+              />
+              <Pressable
+                style={({ pressed }) => [
+                  styles.continueButton,
+                  pressed && styles.pressed,
+                ]}
+                onPress={() => navigation.navigate("WordGuessScreen")}
+              >
+                <Text style={styles.continueButtonText}>Continue ➡️</Text>
+              </Pressable>
+            </>
+          )}
+        </View>
+      </LinearGradient>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -250,14 +254,14 @@ const styles = StyleSheet.create({
   passcodeRow: {
     flexDirection: "row",
     gap: 10,
-    marginBottom: 28,
+    marginBottom: 16,
   },
   solvedText: {
     fontSize: 22,
     color: "#4caf6d",
     fontWeight: "700",
-    marginTop: 20,
-    marginBottom: 24,
+    marginTop: 16,
+    marginBottom: 18,
   },
   continueButton: {
     marginTop: 20,

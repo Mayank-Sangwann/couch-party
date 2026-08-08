@@ -160,14 +160,14 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   headline: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: "800",
     color: "#ffffff",
     textAlign: "center",
     marginBottom: 16,
   },
   subheadline: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: "#f2d9ec",
     textAlign: "center",
